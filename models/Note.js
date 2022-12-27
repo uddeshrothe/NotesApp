@@ -14,7 +14,7 @@ const noteSchema = new mongoose.Schema(
     },
     text: {
       type: String,
-      default: "Employee",
+      default: true,
     },
     completed: {
       type: Boolean,

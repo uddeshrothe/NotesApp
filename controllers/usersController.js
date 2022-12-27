@@ -48,10 +48,11 @@ const updateUser = asyncHandler(async (req, res) => {
     const { id, username, roles, active, password } = req.body
 
     //Confirm data
-    if(!id || !username || !Array.isArray(roles) || !roles.length || typeof active!== 'boolean'){
-        return res.status(400).json({message: 'All fields are required.'})
+    if(!id || !username || !Array.isArray(roles) || !roles.length || typeof active !== 'boolean'){
+        return res.status(400).json({message: 'All fields except password are required.'})
     } 
 
+    //Does user exist to update?
     const user = await User.findById(id).exec()
 
     if(!user){
@@ -60,6 +61,7 @@ const updateUser = asyncHandler(async (req, res) => {
     
     //Check for duplicates
     const duplicate = await User.findOne({username}).lean().exec()
+    
     //Allow updates to the original user
     if(duplicate && duplicate?._id.toString() !== id){
         return res.status(409).json({message: 'Duplicate username'})
@@ -87,8 +89,8 @@ const deleteUser = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: 'User ID required.'})
     }
 
-    const notes = await Note.findOne({ user: id}).lean().exec()
-    if(notes?.length){
+    const note = await Note.findOne({ user: id}).lean().exec()
+    if(note){
         return res.status(400).json({message: 'User has assigned notes.'})
     }
 
